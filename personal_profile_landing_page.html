@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Victor Ong — Portfolio & Admin CMS</title>
+    <!-- Google Fonts: Inter (Figma Style Clean UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Clean Figma-style Pastel & Slate Palette */
+            --bg-main: #F8FAFC;
+            --surface: #FFFFFF;
+            --border-color: #E2E8F0;
+            --border-hover: #CBD5E1;
+            
+            --pastel-blue-light: #E0F2FE;
+            --pastel-blue: #7DD3FC;
+            --pastel-blue-dark: #0284C7;
+            
+            --pastel-green-light: #DCFCE7;
+            --pastel-green: #86EFAC;
+            --pastel-green-dark: #16A34A;
+            
+            --danger-bg: #FEE2E2;
+            --danger-text: #DC2626;
+            
+            --text-title: #0F172A;
+            --text-body: #475569;
+            --text-light: #94A3B8;
+            
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-card: 0 4px 12px rgba(15, 23, 42, 0.03);
+            --shadow-hover: 0 12px 28px rgba(2, 132, 199, 0.08);
+            --shadow-modal: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #090D16;
+            --surface: #111827;
+            --border-color: #1F2937;
+            --border-hover: #374151;
+            
+            --pastel-blue-light: #0C4A6E;
+            --pastel-blue: #38BDF8;
+            --pastel-blue-dark: #38BDF8;
+            
+            --pastel-green-light: #064E3B;
+            --pastel-green: #4ADE80;
+            --pastel-green-dark: #4ADE80;
+            
+            --danger-bg: #451A1A;
+            --danger-text: #FCA5A5;
+            
+            --text-title: #F9FAFB;
+            --text-body: #9CA3AF;
+            --text-light: #6B7280;
+            
+            --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.2);
+            --shadow-hover: 0 12px 28px rgba(56, 189, 248, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+            padding: 0 16px 20px;
+            display: flex;
+            justify-content: center;
+            transition: background-color 0.25s ease, color 0.25s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Container Layout - Mobile First & Responsive */
+        .app-container {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 760px;
+                padding-bottom: 60px;
+            }
+        }
+
+        /* Sticky Navigation Bar */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 10px 16px;
+            margin: 0 -16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        [data-theme="dark"] .sticky-nav {
+            background: rgba(17, 24, 39, 0.85);
+        }
+
+        .nav-links-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: var(--pastel-blue-light);
+            color: var(--pastel-blue-dark);
+        }
+
+        .theme-toggle-btn {
+            background: var(--bg-main);
+            color: var(--text-title);
+            border: 1px solid var(--border-color);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            border-color: var(--pastel-blue);
+        }
+
+        .admin-nav-btn {
+            background-color: var(--text-title);
+            color: var(--surface) !important;
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-size: 0.78rem;
+            transition: opacity 0.2s ease;
+        }
+
+        .admin-nav-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Base Card Styling (Figma Design System Style) */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* Hero Card Section */
+        .hero-card {
+            text-align: center;
+            background: linear-gradient(135deg, var(--surface) 0%, var(--pastel-blue-light) 50%, var(--pastel-green-light) 100%);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 16px;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--surface);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .badge-online {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 16px;
+            height: 16px;
+            background-color: var(--pastel-green-dark);
+            border: 3px solid var(--surface);
+            border-radius: 50%;
+        }
+
+        .hero-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-title);
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .hero-subtitle {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--pastel-blue-dark);
+            margin-bottom: 12px;
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        [data-theme="dark"] .hero-subtitle {
+            background: rgba(17, 24, 39, 0.6);
+        }
+
+        .hero-desc {
+            font-size: 0.875rem;
+            color: var(--text-body);
+            margin-bottom: 20px;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 42px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background-color: var(--text-title);
+            color: var(--surface);
+            border-color: var(--text-title);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background-color: var(--surface);
+            color: var(--text-title);
+            border-color: var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--border-hover);
+            background-color: var(--bg-main);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-bg);
+            color: var(--danger-text);
+            border-color: transparent;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.9;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 16px 8px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+        }
+
+        .stat-number {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--text-title);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: var(--pastel-blue-dark);
+            border-radius: 4px;
+        }
+
+        /* Skills Layout */
+        .skills-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .skill-tag {
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid transparent;
+        }
+
+        .tag-blue {
+            background-color: var(--pastel-blue-light);
+            color: var(--pastel-blue-dark);
+            border-color: rgba(125, 211, 252, 0.4);
+        }
+
+        .tag-green {
+            background-color: var(--pastel-green-light);
+            color: var(--pastel-green-dark);
+            border-color: rgba(134, 239, 172, 0.4);
+        }
+
+        /* Projects Cards Layout */
+        .projects-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .project-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            background-color: var(--surface);
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .project-item:hover {
+            border-color: var(--pastel-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .project-info h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 2px;
+        }
+
+        .project-info p {
+            font-size: 0.8rem;
+            color: var(--text-body);
+        }
+
+        .project-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background-color: var(--pastel-green-light);
+            color: var(--pastel-green-dark);
+            border: 1px solid rgba(134, 239, 172, 0.6);
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .project-arrow {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--bg-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-title);
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        .project-item:hover .project-arrow {
+            background-color: var(--pastel-blue-light);
+            color: var(--pastel-blue-dark);
+        }
+
+        /* Hobbies Grid */
+        .hobbies-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .hobby-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+            transition: all 0.25s ease;
+        }
+
+        .hobby-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--pastel-blue);
+        }
+
+        .hobby-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .hobby-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 4px;
+        }
+
+        .hobby-desc {
+            font-size: 0.75rem;
+            color: var(--text-body);
+        }
+
+        /* Contact Section */
+        .contact-card {
+            text-align: center;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .social-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-title);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .social-icon:hover {
+            border-color: var(--pastel-blue);
+            color: var(--pastel-blue-dark);
+            transform: translateY(-2px);
+        }
+
+        .social-icon[data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background-color: var(--text-title);
+            color: var(--surface);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            pointer-events: none;
+        }
+
+        .social-icon[data-tooltip]:hover::after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .contact-form-wrapper {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--border-color);
+            text-align: left;
+        }
+
+        .contact-form-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-field input,
+        .form-field textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--surface);
+            color: var(--text-title);
+            font-family: inherit;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-field input:focus,
+        .form-field textarea:focus {
+            border-color: var(--pastel-blue-dark);
+        }
+
+        .form-field input:not(:placeholder-shown):invalid,
+        .form-field textarea:not(:placeholder-shown):invalid {
+            border-color: #EF4444;
+        }
+
+        .validation-hint {
+            font-size: 0.7rem;
+            color: #EF4444;
+            display: none;
+        }
+
+        .form-field input:not(:placeholder-shown):invalid ~ .validation-hint,
+        .form-field textarea:not(:placeholder-shown):invalid ~ .validation-hint {
+            display: block;
+        }
+
+        .footer-text {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 12px;
+        }
+
+        /* ------------------------------------------------------------- */
+        /* FULL-SCREEN SIDEBAR ADMIN DASHBOARD SYSTEM                     */
+        /* ------------------------------------------------------------- */
+        .admin-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .admin-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Login Modal Box */
+        .login-box {
+            background: var(--surface);
+            width: 90%;
+            max-width: 380px;
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow-modal);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Fullscreen Dashboard Container */
+        .admin-fullscreen-box {
+            background: var(--surface);
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .admin-fullscreen-box {
+                width: 92vw;
+                height: 90vh;
+                border-radius: var(--radius-lg);
+                border: 1px solid var(--border-color);
+                box-shadow: var(--shadow-modal);
+            }
+        }
+
+        .admin-header-bar {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+        }
+
+        .admin-header-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-title);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-header-title span {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            background: var(--pastel-blue-light);
+            color: var(--pastel-blue-dark);
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .close-admin-btn {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-title);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Sidebar & Content Layout */
+        .admin-body-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        @media (min-width: 768px) {
+            .admin-body-layout {
+                flex-direction: row;
+            }
+        }
+
+        .admin-sidebar {
+            width: 100%;
+            background: var(--bg-main);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px;
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+        }
+
+        @media (min-width: 768px) {
+            .admin-sidebar {
+                width: 230px;
+                border-bottom: none;
+                border-right: 1px solid var(--border-color);
+                flex-direction: column;
+                padding: 16px;
+                overflow-x: visible;
+            }
+        }
+
+        .sidebar-btn {
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-body);
+            font-size: 0.825rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-btn:hover {
+            background: var(--surface);
+            color: var(--text-title);
+        }
+
+        .sidebar-btn.active {
+            background: var(--surface);
+            color: var(--pastel-blue-dark);
+            border-color: var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .admin-content-panel {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            background: var(--surface);
+        }
+
+        .admin-section {
+            display: none;
+            max-width: 680px;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-title);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            font-family: inherit;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+            background: var(--surface);
+            color: var(--text-title);
+        }
+
+        .form-control:focus {
+            border-color: var(--pastel-blue-dark);
+        }
+
+        .list-edit-item {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-title);
+            color: var(--surface);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.825rem;
+            font-weight: 600;
+            z-index: 2000;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sticky Navigation Bar -->
+        <nav class="sticky-nav">
+            <div class="nav-links-group">
+                <a href="#hero" class="nav-link">Profil</a>
+                <a href="#keahlian" class="nav-link">Keahlian</a>
+                <a href="#proyek" class="nav-link">Proyek</a>
+                <a href="#hobi" class="nav-link">Hobi</a>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Mode Gelap/Terang">🌙</button>
+                <button class="admin-nav-btn" id="adminToggleBtn" onclick="openAdminModal()">Panel Admin</button>
+            </div>
+        </nav>
+
+        <!-- Hero Card Section -->
+        <header class="card hero-card" id="hero">
+            <div class="avatar-wrapper">
+                <img id="display-avatar" src="https://placehold.co/200x200/7dd3fc/0284c7?text=V" alt="Foto Profil" class="avatar-img">
+                <span class="badge-online" title="Tersedia untuk proyek"></span>
+            </div>
+            <h1 class="hero-title" id="display-name">Victor Ong</h1>
+            <span class="hero-subtitle" id="display-subtitle">Spatial & UI/UX Designer</span>
+            <p class="hero-desc" id="display-bio">Kreator serba bisa yang menyukai desain struktur, riset pengalaman pengguna, serta eksplorasi bahasa dan permainan virtual.</p>
+            
+            <div class="cta-group">
+                <a id="display-email-btn" href="mailto:victor.ong@example.com" class="btn btn-primary">Hubungi Saya</a>
+                <a href="#proyek" class="btn btn-secondary">Portofolio</a>
+            </div>
+        </header>
+
+        <!-- Stats Section -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number" id="display-exp">3+</span>
+                <span class="stat-label">Tahun Pengalaman</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="display-projects-count">20+</span>
+                <span class="stat-label">Proyek Selesai</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="display-satisfaction">100%</span>
+                <span class="stat-label">Kepuasan Klien</span>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="card" id="keahlian">
+            <h2 class="section-title">Keahlian Utama</h2>
+            <div class="skills-wrapper" id="display-skills">
+                <!-- Dynamic Skills Rendered via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Featured Projects Section -->
+        <section class="card" id="proyek">
+            <h2 class="section-title">Proyek Unggulan</h2>
+            <div class="projects-list" id="display-projects">
+                <!-- Dynamic Projects Rendered via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Hobbies Section -->
+        <section class="card" id="hobi">
+            <h2 class="section-title">Minat & Hobi</h2>
+            <div class="hobbies-grid" id="display-hobbies">
+                <!-- Dynamic Hobbies Rendered via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="card contact-card" id="kontak">
+            <h2 class="section-title" style="justify-content: center;">Mari Bekerja Sama</h2>
+            <p style="font-size: 0.85rem; margin-bottom: 16px;">Tertarik untuk memulai proyek baru atau sekadar berdiskusi?</p>
+            <a id="display-contact-email" href="mailto:victor.ong@example.com" class="btn btn-primary" style="width: 100%;">Kirim Email Langsung</a>
+            
+            <div class="social-links">
+                <a id="display-linkedin" href="#" target="_blank" class="social-icon" aria-label="LinkedIn" data-tooltip="LinkedIn">
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.7a1.4 1.4 0 1 0 1.4 1.4 1.4 1.4 0 0 0-1.4-1.4Z"/></svg>
+                </a>
+                <a id="display-github" href="#" target="_blank" class="social-icon" aria-label="GitHub" data-tooltip="GitHub">
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2Z"/></svg>
+                </a>
+                <a id="display-instagram" href="#" target="_blank" class="social-icon" aria-label="Instagram" data-tooltip="Instagram">
+                    <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+            </div>
+
+            <!-- Form Kontak Cepat -->
+            <div class="contact-form-wrapper">
+                <h3 class="contact-form-title">Pesan Cepat</h3>
+                <form class="contact-form" onsubmit="handleContactSubmit(event)">
+                    <div class="form-field">
+                        <input type="text" id="contactName" placeholder="Nama Anda" required minlength="3">
+                        <span class="validation-hint">Minimal 3 karakter.</span>
+                    </div>
+                    <div class="form-field">
+                        <input type="email" id="contactEmail" placeholder="Email Anda" required>
+                        <span class="validation-hint">Format email tidak valid.</span>
+                    </div>
+                    <div class="form-field">
+                        <textarea id="contactMessage" rows="3" placeholder="Pesan Anda..." required minlength="10"></textarea>
+                        <span class="validation-hint">Pesan minimal 10 karakter.</span>
+                    </div>
+                    <button type="submit" class="btn btn-secondary" style="width: 100%;">Kirim Pesan</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer-text">
+            <p>© 2026 Victor Ong — Spatial & UI/UX Designer</p>
+            <p style="margin-top: 4px;"><a href="#hero" style="color: var(--pastel-blue-dark); text-decoration: none; font-weight: 600;">Kembali ke Atas ↑</a></p>
+        </footer>
+    </div>
+
+    <!-- ------------------------------------------------------------- -->
+    <!-- BACKEND SYSTEM: SECURE LOGIN & FULL-SCREEN DASHBOARD MODAL    -->
+    <!-- ------------------------------------------------------------- -->
+    <div class="admin-overlay" id="adminModal">
+        
+        <!-- View 1: Clean Admin Login Box -->
+        <div class="login-box" id="loginView">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--text-title);">Login Autentikasi</h3>
+                <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 4px;">Masukan kredensial untuk akses Admin Dashboard</p>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="adminUsername">Username</label>
+                    <input type="text" id="adminUsername" class="form-control" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" class="form-control" placeholder="••••••••" required>
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 16px;">
+                    <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeAdminModal()">Batal</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Masuk Admin</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- View 2: Full-Screen Sidebar Admin Dashboard -->
+        <div class="admin-fullscreen-box" id="dashboardView" style="display: none;">
+            <!-- Header Bar -->
+            <div class="admin-header-bar">
+                <div class="admin-header-title">
+                    ⚡ Admin Management System <span>Fullstack CMS</span>
+                </div>
+                <button class="close-admin-btn" onclick="closeAdminModal()" title="Tutup Dashboard">✕</button>
+            </div>
+
+            <!-- Main Layout: Sidebar + Dynamic Content -->
+            <div class="admin-body-layout">
+                <!-- Sidebar Menu -->
+                <aside class="admin-sidebar">
+                    <button class="sidebar-btn active" onclick="switchTab('profileTab', this)">
+                        👤 Profil & Stats
+                    </button>
+                    <button class="sidebar-btn" onclick="switchTab('projectsTab', this)">
+                        📁 Kelola Proyek
+                    </button>
+                    <button class="sidebar-btn" onclick="switchTab('skillsTab', this)">
+                        💡 Kelola Keahlian
+                    </button>
+                    <button class="sidebar-btn" onclick="switchTab('hobbiesTab', this)">
+                        🧩 Kelola Hobi
+                    </button>
+                    <button class="sidebar-btn" onclick="switchTab('securityTab', this)">
+                        🔐 Pengaturan Akun
+                    </button>
+
+                    <div style="margin-top: auto; padding-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+                        <button onclick="handleLogout()" class="btn btn-danger" style="width: 100%; font-size: 0.78rem;">Logout Admin</button>
+                        <button onclick="resetDefaultData()" class="btn btn-secondary" style="width: 100%; font-size: 0.75rem;">Reset Default</button>
+                    </div>
+                </aside>
+
+                <!-- Content Area -->
+                <main class="admin-content-panel">
+                    <!-- Tab 1: Profile & Stats -->
+                    <div id="profileTab" class="admin-section active">
+                        <h3 style="margin-bottom: 16px; color: var(--text-title);">Edit Informasi Profil</h3>
+                        <form onsubmit="saveProfile(event)">
+                            <div class="form-group">
+                                <label for="editName">Nama Lengkap</label>
+                                <input type="text" id="editName" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editSubtitle">Subtitle / Sub-Header</label>
+                                <input type="text" id="editSubtitle" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editBio">Deskripsi Bio</label>
+                                <textarea id="editBio" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEmail">Email Kontak</label>
+                                <input type="email" id="editEmail" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editAvatar">URL Foto Profil Avatar</label>
+                                <input type="url" id="editAvatar" class="form-control" required>
+                            </div>
+                            
+                            <h4 style="margin: 20px 0 10px; font-size: 0.9rem; color: var(--text-title);">Metrik Statistik</h4>
+                            <div style="display: flex; gap: 8px;">
+                                <div class="form-group" style="flex:1;">
+                                    <label for="editExp">Pengalaman</label>
+                                    <input type="text" id="editExp" class="form-control" required>
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <label for="editProjectsCount">Jumlah Proyek</label>
+                                    <input type="text" id="editProjectsCount" class="form-control" required>
+                                </div>
+                                <div class="form-group" style="flex:1;">
+                                    <label for="editSatisfaction">Kepuasan</label>
+                                    <input type="text" id="editSatisfaction" class="form-control" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Simpan Perubahan Profil</button>
+                        </form>
+                    </div>
+
+                    <!-- Tab 2: Projects CRUD -->
+                    <div id="projectsTab" class="admin-section">
+                        <h3 style="margin-bottom: 16px; color: var(--text-title);">Kelola Kartu Proyek</h3>
+                        <div id="adminProjectsList"></div>
+                        <div style="display: flex; gap: 10px; margin-top: 12px;">
+                            <button onclick="addProjectItem()" class="btn btn-secondary">+ Tambah Proyek Baru</button>
+                            <button onclick="saveProjects()" class="btn btn-primary">Simpan Semua Proyek</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Skills CRUD -->
+                    <div id="skillsTab" class="admin-section">
+                        <h3 style="margin-bottom: 16px; color: var(--text-title);">Kelola Keahlian Utama</h3>
+                        <div id="adminSkillsList"></div>
+                        <div style="display: flex; gap: 10px; margin-top: 12px;">
+                            <button onclick="addSkillItem()" class="btn btn-secondary">+ Tambah Keahlian</button>
+                            <button onclick="saveSkills()" class="btn btn-primary">Simpan Keahlian</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Hobbies CRUD -->
+                    <div id="hobbiesTab" class="admin-section">
+                        <h3 style="margin-bottom: 16px; color: var(--text-title);">Kelola Minat & Hobi</h3>
+                        <div id="adminHobbiesList"></div>
+                        <div style="display: flex; gap: 10px; margin-top: 12px;">
+                            <button onclick="addHobbyItem()" class="btn btn-secondary">+ Tambah Hobi</button>
+                            <button onclick="saveHobbies()" class="btn btn-primary">Simpan Hobi</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab 5: Security / Credentials Management -->
+                    <div id="securityTab" class="admin-section">
+                        <h3 style="margin-bottom: 16px; color: var(--text-title);">Pengaturan Akun & Keamanan</h3>
+                        <form onsubmit="saveCredentials(event)">
+                            <div class="form-group">
+                                <label for="changeUsername">Username Admin Baru</label>
+                                <input type="text" id="changeUsername" class="form-control" required minlength="3">
+                            </div>
+                            <div class="form-group">
+                                <label for="changePassword">Password Admin Baru</label>
+                                <input type="password" id="changePassword" class="form-control" placeholder="••••••••" required minlength="4">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Update Kredensial Login</button>
+                        </form>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Notifikasi Sistem</div>
+
+    <!-- ------------------------------------------------------------- -->
+    <!-- VANILLA JAVASCRIPT LOGIC & SELF-CONTAINED DATABASE STATE      -->
+    <!-- ------------------------------------------------------------- -->
+    <script>
+        const defaultData = {
+            profile: {
+                name: "Victor Ong",
+                subtitle: "Spatial & UI/UX Designer",
+                bio: "Kreator serba bisa yang menyukai desain struktur, riset pengalaman pengguna, serta eksplorasi bahasa dan permainan virtual.",
+                email: "victor.ong@example.com",
+                avatar: "https://placehold.co/200x200/7dd3fc/0284c7?text=V",
+                exp: "3+",
+                projectsCount: "20+",
+                satisfaction: "100%",
+                linkedin: "https://linkedin.com",
+                github: "https://github.com",
+                instagram: "https://instagram.com"
+            },
+            skills: [
+                { name: "🤝 Co-operating", tagClass: "tag-blue" },
+                { name: "🎨 UI/UX Research", tagClass: "tag-green" },
+                { name: "💬 Socializing", tagClass: "tag-blue" },
+                { name: "🏛️ Building Structure Designing", tagClass: "tag-green" },
+                { name: "📐 Prototyping", tagClass: "tag-blue" },
+                { name: "🎮 Gaming", tagClass: "tag-green" }
+            ],
+            projects: [
+                { 
+                    title: "Project Database Firebase (Coming Soon P7)", 
+                    desc: "Aplikasi interaktif yang terhubung ke cloud database realtime", 
+                    link: "#", 
+                    badge: "Upcoming" 
+                },
+                { title: "Blueprint Bangunan Miniatur & Realita", desc: "Perancangan arsitektural dan tata ruang detail untuk maket maupun lingkungan nyata.", link: "https://example.com/blueprint", badge: "" },
+                { title: "Eksplorasi Kreasi Bebas", desc: "Wadah eksperimen konseptual tanpa batas yang memadukan estetika, imajinasi, dan fungsionalitas.", link: "https://example.com/kreasi", badge: "" },
+                { title: "Seni & Latihan Kaligrafi", desc: "Studi dan pembuatan karya seni tulisan tangan dengan fokus ketelitian & keindahan garis.", link: "https://example.com/kaligrafi", badge: "" }
+            ],
+            hobbies: [
+                { icon: "⛏️", title: "Minecraft Bedrock", desc: "Membangun struktur arsitektur kreatif dan eksplorasi dunia kubus." },
+                { icon: "🏮", title: "Belajar Bahasa Mandarin", desc: "Mendalami kosa kata, tata bahasa, serta tradisi penulisan karakter." },
+                { icon: "🏸", title: "Badminton", desc: "Olah raga fisik yang melatih kelincahan, fokus, dan stamina harian." },
+                { icon: "📺", title: "Menonton TV", desc: "Bersantai menikmati tayangan hiburan, dokumenter, dan ide-ide inspiratif." }
+            ]
+        };
+
+        const defaultAuth = { user: 'admin', pass: 'admin123' };
+
+        // State initialization
+        let appState = JSON.parse(localStorage.getItem('portfolioData')) || defaultData;
+        let authState = JSON.parse(localStorage.getItem('adminCredentials')) || defaultAuth;
+        let isAuthenticated = sessionStorage.getItem('isAdminAuth') === 'true';
+
+        function escapeAttr(str) {
+            return (str || '').replace(/"/g, '&quot;');
+        }
+
+        /* ------------------------------------------------------------- */
+        /* FRONTEND RENDERING                                            */
+        /* ------------------------------------------------------------- */
+        function renderFrontend() {
+            // Profile Info
+            document.getElementById('display-name').innerText = appState.profile.name;
+            document.getElementById('display-subtitle').innerText = appState.profile.subtitle;
+            document.getElementById('display-bio').innerText = appState.profile.bio;
+            document.getElementById('display-avatar').src = appState.profile.avatar;
+            document.getElementById('display-email-btn').href = `mailto:${appState.profile.email}`;
+            document.getElementById('display-contact-email').href = `mailto:${appState.profile.email}`;
+            
+            // Statistics
+            document.getElementById('display-exp').innerText = appState.profile.exp;
+            document.getElementById('display-projects-count').innerText = appState.profile.projectsCount;
+            document.getElementById('display-satisfaction').innerText = appState.profile.satisfaction;
+
+            // Social links
+            document.getElementById('display-linkedin').href = appState.profile.linkedin || "#";
+            document.getElementById('display-github').href = appState.profile.github || "#";
+            document.getElementById('display-instagram').href = appState.profile.instagram || "#";
+
+            // Render Skills
+            const skillsContainer = document.getElementById('display-skills');
+            skillsContainer.innerHTML = appState.skills.map(skill => 
+                `<span class="skill-tag ${skill.tagClass || 'tag-blue'}">${skill.name}</span>`
+            ).join('');
+
+            // Render Projects
+            const projectsContainer = document.getElementById('display-projects');
+            projectsContainer.innerHTML = appState.projects.map(proj => 
+                `<a href="${proj.link || '#'}" target="_blank" class="project-item">
+                    <div class="project-info">
+                        <h4>
+                            ${proj.title}
+                            ${proj.badge ? `<span class="project-badge">${proj.badge}</span>` : ''}
+                        </h4>
+                        <p>${proj.desc}</p>
+                    </div>
+                    <div class="project-arrow">➔</div>
+                </a>`
+            ).join('');
+
+            // Render Hobbies
+            const hobbiesContainer = document.getElementById('display-hobbies');
+            hobbiesContainer.innerHTML = appState.hobbies.map(hobby => 
+                `<div class="hobby-card">
+                    <span class="hobby-icon">${hobby.icon}</span>
+                    <h3 class="hobby-title">${hobby.title}</h3>
+                    <p class="hobby-desc">${hobby.desc}</p>
+                </div>`
+            ).join('');
+        }
+
+        function saveState() {
+            localStorage.setItem('portfolioData', JSON.stringify(appState));
+            renderFrontend();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        /* ------------------------------------------------------------- */
+        /* AUTHENTICATION & MODAL SYSTEM                                 */
+        /* ------------------------------------------------------------- */
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.add('active');
+            if (isAuthenticated) {
+                showDashboardView();
+            } else {
+                showLoginView();
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+        }
+
+        function showLoginView() {
+            document.getElementById('loginView').style.display = "block";
+            document.getElementById('dashboardView').style.display = "none";
+        }
+
+        function showDashboardView() {
+            document.getElementById('loginView').style.display = "none";
+            document.getElementById('dashboardView').style.display = "flex";
+            document.getElementById('adminToggleBtn').innerText = "Dashboard Admin";
+            populateAdminForms();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('adminUsername').value.trim();
+            const pass = document.getElementById('adminPassword').value.trim();
+
+            if (user === authState.user && pass === authState.pass) {
+                isAuthenticated = true;
+                sessionStorage.setItem('isAdminAuth', 'true');
+                showToast("Login Berhasil! Selamat datang Admin.");
+                showDashboardView();
+            } else {
+                showToast("Username atau Password salah!");
+            }
+        }
+
+        function handleLogout() {
+            isAuthenticated = false;
+            sessionStorage.removeItem('isAdminAuth');
+            document.getElementById('adminToggleBtn').innerText = "Panel Admin";
+            showToast("Anda telah logout.");
+            showLoginView();
+        }
+
+        function saveCredentials(e) {
+            e.preventDefault();
+            const newUser = document.getElementById('changeUsername').value.trim();
+            const newPass = document.getElementById('changePassword').value.trim();
+
+            if (newUser && newPass) {
+                authState.user = newUser;
+                authState.pass = newPass;
+                localStorage.setItem('adminCredentials', JSON.stringify(authState));
+                showToast("Username & Password Admin berhasil diperbarui!");
+            }
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        /* ------------------------------------------------------------- */
+        /* BACKEND CRUD CONTROLLERS                                      */
+        /* ------------------------------------------------------------- */
+        function populateAdminForms() {
+            // Profile tab values
+            document.getElementById('editName').value = appState.profile.name;
+            document.getElementById('editSubtitle').value = appState.profile.subtitle;
+            document.getElementById('editBio').value = appState.profile.bio;
+            document.getElementById('editEmail').value = appState.profile.email;
+            document.getElementById('editAvatar').value = appState.profile.avatar;
+            document.getElementById('editExp').value = appState.profile.exp;
+            document.getElementById('editProjectsCount').value = appState.profile.projectsCount;
+            document.getElementById('editSatisfaction').value = appState.profile.satisfaction;
+
+            // Security tab value
+            document.getElementById('changeUsername').value = authState.user;
+            document.getElementById('changePassword').value = authState.pass;
+
+            // Render admin list items
+            renderAdminProjectsList();
+            renderAdminSkillsList();
+            renderAdminHobbiesList();
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+            appState.profile.name = document.getElementById('editName').value;
+            appState.profile.subtitle = document.getElementById('editSubtitle').value;
+            appState.profile.bio = document.getElementById('editBio').value;
+            appState.profile.email = document.getElementById('editEmail').value;
+            appState.profile.avatar = document.getElementById('editAvatar').value;
+            appState.profile.exp = document.getElementById('editExp').value;
+            appState.profile.projectsCount = document.getElementById('editProjectsCount').value;
+            appState.profile.satisfaction = document.getElementById('editSatisfaction').value;
+            
+            saveState();
+            showToast("Profil berhasil disimpan!");
+        }
+
+        // Projects CRUD
+        function renderAdminProjectsList() {
+            const container = document.getElementById('adminProjectsList');
+            container.innerHTML = appState.projects.map((proj, idx) => `
+                <div class="list-edit-item">
+                    <input type="text" class="form-control" value="${escapeAttr(proj.title)}" placeholder="Judul Proyek" onchange="appState.projects[${idx}].title = this.value">
+                    <input type="text" class="form-control" value="${escapeAttr(proj.desc)}" placeholder="Deskripsi Singkat" onchange="appState.projects[${idx}].desc = this.value">
+                    <input type="url" class="form-control" value="${escapeAttr(proj.link || '')}" placeholder="URL Tautan Proyek" onchange="appState.projects[${idx}].link = this.value">
+                    <input type="text" class="form-control" value="${escapeAttr(proj.badge || '')}" placeholder="Badge Proyek (misal: Upcoming)" onchange="appState.projects[${idx}].badge = this.value">
+                    <button onclick="removeProjectItem(${idx})" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.725rem; align-self: flex-end;">Hapus Proyek</button>
+                </div>
+            `).join('');
+        }
+
+        function addProjectItem() {
+            appState.projects.push({ title: "Proyek Baru", desc: "Deskripsi singkat proyek...", link: "https://example.com", badge: "" });
+            renderAdminProjectsList();
+        }
+
+        function removeProjectItem(idx) {
+            appState.projects.splice(idx, 1);
+            renderAdminProjectsList();
+        }
+
+        function saveProjects() {
+            saveState();
+            showToast("Daftar Proyek tersimpan!");
+        }
+
+        // Skills CRUD
+        function renderAdminSkillsList() {
+            const container = document.getElementById('adminSkillsList');
+            container.innerHTML = appState.skills.map((skill, idx) => `
+                <div class="list-edit-item" style="flex-direction: row; align-items: center; gap: 8px;">
+                    <input type="text" class="form-control" value="${escapeAttr(skill.name)}" placeholder="Nama Keahlian" onchange="appState.skills[${idx}].name = this.value">
+                    <select class="form-control" style="width: 120px;" onchange="appState.skills[${idx}].tagClass = this.value">
+                        <option value="tag-blue" ${skill.tagClass === 'tag-blue' ? 'selected' : ''}>Biru</option>
+                        <option value="tag-green" ${skill.tagClass === 'tag-green' ? 'selected' : ''}>Hijau</option>
+                    </select>
+                    <button onclick="removeSkillItem(${idx})" class="btn btn-danger" style="padding: 6px 12px;">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function addSkillItem() {
+            appState.skills.push({ name: "Skill Baru", tagClass: "tag-blue" });
+            renderAdminSkillsList();
+        }
+
+        function removeSkillItem(idx) {
+            appState.skills.splice(idx, 1);
+            renderAdminSkillsList();
+        }
+
+        function saveSkills() {
+            saveState();
+            showToast("Daftar Keahlian tersimpan!");
+        }
+
+        // Hobbies CRUD
+        function renderAdminHobbiesList() {
+            const container = document.getElementById('adminHobbiesList');
+            container.innerHTML = appState.hobbies.map((hobby, idx) => `
+                <div class="list-edit-item">
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" class="form-control" style="width: 70px;" value="${escapeAttr(hobby.icon)}" placeholder="Emoji" onchange="appState.hobbies[${idx}].icon = this.value">
+                        <input type="text" class="form-control" value="${escapeAttr(hobby.title)}" placeholder="Judul Hobi" onchange="appState.hobbies[${idx}].title = this.value">
+                    </div>
+                    <input type="text" class="form-control" value="${escapeAttr(hobby.desc)}" placeholder="Deskripsi Hobi" onchange="appState.hobbies[${idx}].desc = this.value">
+                    <button onclick="removeHobbyItem(${idx})" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.725rem; align-self: flex-end;">Hapus Hobi</button>
+                </div>
+            `).join('');
+        }
+
+        function addHobbyItem() {
+            appState.hobbies.push({ icon: "🎨", title: "Hobi Baru", desc: "Deskripsi hobi..." });
+            renderAdminHobbiesList();
+        }
+
+        function removeHobbyItem(idx) {
+            appState.hobbies.splice(idx, 1);
+            renderAdminHobbiesList();
+        }
+
+        function saveHobbies() {
+            saveState();
+            showToast("Daftar Hobi tersimpan!");
+        }
+
+        function resetDefaultData() {
+            appState = JSON.parse(JSON.stringify(defaultData));
+            authState = JSON.parse(JSON.stringify(defaultAuth));
+            localStorage.removeItem('adminCredentials');
+            saveState();
+            populateAdminForms();
+            showToast("Data dikembalikan ke pengaturan default.");
+        }
+
+        /* ------------------------------------------------------------- */
+        /* THEME & UTILITIES                                             */
+        /* ------------------------------------------------------------- */
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const themeBtn = document.getElementById('themeToggleBtn');
+            if (themeBtn) {
+                themeBtn.innerText = savedTheme === 'dark' ? '☀️' : '🌙';
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            const themeBtn = document.getElementById('themeToggleBtn');
+            if (themeBtn) {
+                themeBtn.innerText = newTheme === 'dark' ? '☀️' : '🌙';
+            }
+            showToast(`Mode ${newTheme === 'dark' ? 'Gelap' : 'Terang'} aktif.`);
+        }
+
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('contactName').value;
+            showToast(`Terima kasih ${name}, pesan Anda telah dikirim!`);
+            e.target.reset();
+        }
+
+        window.onload = function() {
+            initTheme();
+            renderFrontend();
+            if (isAuthenticated) {
+                document.getElementById('adminToggleBtn').innerText = "Dashboard Admin";
+            }
+        };
+    </script>
+</body>
+</html>
